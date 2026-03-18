@@ -74,7 +74,7 @@ def step_robot(r: rtb.ERobot, Tep):
     ub = np.r_[r.qdlim[: r.n], 10 * np.ones(6)]
 
     # Solve for the joint velocities dq
-    qd = qp.solve_qp(Q, c, Ain, bin, Aeq, beq, lb=lb, ub=ub)
+    qd = qp.solve_qp(Q, c, Ain, bin, Aeq, beq, lb=lb, ub=ub, solver='cvxopt')
     qd = qd[: r.n]
 
     if et > 0.5:

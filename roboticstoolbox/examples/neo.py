@@ -25,10 +25,10 @@ n = 7
 
 # Make two obstacles with velocities
 s0 = sg.Sphere(radius=0.05, pose=sm.SE3(0.52, 0.4, 0.3))
-s0.v = [0, -0.2, 0, 0, 0, 0]
+s0.v = [0, -0.3, 0, 0, 0, 0]
 
 s1 = sg.Sphere(radius=0.05, pose=sm.SE3(0.1, 0.35, 0.65))
-s1.v = [0, -0.2, 0, 0, 0, 0]
+s1.v = [0, -0.3, 0, 0, 0, 0]
 
 collisions = [s0, s1]
 
@@ -110,9 +110,14 @@ def step():
         # If there are any parts of the robot within the influence distance
         # to the collision in the scene
         if c_Ain is not None and c_bin is not None:
+            print("c_Ain的形状：", c_Ain.shape)
+            # print("c_Ain：", c_Ain)
+            c_Ain = c_Ain[:, :7]
             c_Ain = np.c_[c_Ain, np.zeros((c_Ain.shape[0], 6))]
 
             # Stack the inequality constraints
+            print("Ain的形状：", Ain.shape)
+            print("c_Ain的形状：", c_Ain.shape)
             Ain = np.r_[Ain, c_Ain]
             bin = np.r_[bin, c_bin]
 
@@ -124,9 +129,10 @@ def step():
     ub = np.r_[panda.qdlim[:n], 10 * np.ones(6)]
 
     # Solve for the joint velocities dq
-    qd = qp.solve_qp(Q, c, Ain, bin, Aeq, beq, lb=lb, ub=ub)
+    qd = qp.solve_qp(Q, c, Ain, bin, Aeq, beq, lb=lb, ub=ub, solver='cvxopt')
 
     # Apply the joint velocities to the Panda
+    # print('qd',qd)
     panda.qd[:n] = qd[:n]
 
     # Step the simulator by 50 ms
