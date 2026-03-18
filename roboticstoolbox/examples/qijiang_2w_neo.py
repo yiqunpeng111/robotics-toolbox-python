@@ -275,7 +275,7 @@ def step():
     )
 
     # 提取关节速度（前24维），赋给机器人
-    # print('qd_sol', qd_sol)
+    print('qd_sol', qd_sol)
     # print(robot.q)
     if qd_sol is not None:
         robot.qd[:n] = qd_sol[:n]
